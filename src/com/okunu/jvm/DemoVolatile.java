@@ -1,11 +1,19 @@
 package com.okunu.jvm;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class DemoVolatile {
 
     public static volatile int race = 0;
     public static void increase(){
         race++;
     }
+    
+    public static AtomicInteger atoRace = new AtomicInteger(0);
+    public static void increase2(){
+        atoRace.incrementAndGet();
+    }
+    
     public static void main(String[] args) {
         Thread[] threads = new Thread[20];
         for (int i = 0; i < threads.length; i++) {
@@ -13,6 +21,7 @@ public class DemoVolatile {
                 public void run() {
                     for (int j = 0; j < 10000; j++) {
                         increase();
+                        increase2();
                     }
                 }
             };
@@ -21,6 +30,6 @@ public class DemoVolatile {
         while (Thread.activeCount() > 1) {
             Thread.yield();
         }
-        System.out.println(race);
+        System.out.println(race + "  --  " + atoRace.get());
     }
 }
